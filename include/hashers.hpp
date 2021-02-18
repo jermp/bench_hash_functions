@@ -7,11 +7,24 @@
 
 namespace hasher {
 
+inline uint64_t mod64(uint64_t h, uint64_t n) {
+    // h % n is much slower (~2X)
+    return (uint64_t)(((__uint128_t)(h >> 32) * (__uint128_t)n) >> 32);
+}
+
+inline uint64_t mod128(__uint128_t h, uint64_t n) {
+    return (uint64_t)(((h >> 64) * (__uint128_t)n) >> 64);
+}
+
 struct murmurhash2_64 {
     typedef uint64_t hash_type;
 
     static std::string name() {
         return "murmurhash2_64";
+    }
+
+    uint64_t mod(hash_type h, uint64_t n) {
+        return mod64(h, n);
     }
 
     // specialization for std::string
@@ -30,6 +43,10 @@ struct murmurhash3_128 {
 
     static std::string name() {
         return "murmurhash3_128";
+    }
+
+    uint64_t mod(hash_type h, uint64_t n) {
+        return mod128(h, n);
     }
 
     // specialization for std::string
@@ -54,6 +71,10 @@ struct cityhash_64 {
         return "cityhash_64";
     }
 
+    uint64_t mod(hash_type h, uint64_t n) {
+        return mod64(h, n);
+    }
+
     // specialization for std::string
     hash_type hash(std::string const& val, uint64_t seed) {
         return CityHash64WithSeed(val.data(), val.size(), seed);
@@ -70,6 +91,10 @@ struct cityhash_128 {
 
     static std::string name() {
         return "cityhash_128";
+    }
+
+    uint64_t mod(hash_type h, uint64_t n) {
+        return mod128(h, n);
     }
 
     // specialization for std::string
@@ -99,6 +124,10 @@ struct spookyhash_64 {
         return "spookyhash_64";
     }
 
+    uint64_t mod(hash_type h, uint64_t n) {
+        return mod64(h, n);
+    }
+
     // specialization for std::string
     hash_type hash(std::string const& val, uint64_t seed) {
         return SpookyHash::Hash64(val.data(), val.size(), seed);
@@ -115,6 +144,10 @@ struct spookyhash_128 {
 
     static std::string name() {
         return "spookyhash_128";
+    }
+
+    uint64_t mod(hash_type h, uint64_t n) {
+        return mod128(h, n);
     }
 
     // specialization for std::string

@@ -73,8 +73,8 @@ void perf(Iterator keys, uint64_t n) {
         Iterator begin = keys;
         for (uint64_t i = 0; i != n; ++i) {
             auto const& key = *begin;
-            hash_type p = h.hash(key, seed);
-            sum += p;
+            hash_type hash = h.hash(key, seed);
+            sum += hash;
             ++begin;
         }
     }
@@ -84,7 +84,36 @@ void perf(Iterator keys, uint64_t n) {
     double nanosec_per_key = elapsed / (runs * n);
 
     std::cout << "#ignore: " << sum << std::endl;
-    std::cout << "nanosec_per_key = " << nanosec_per_key << std::endl;
+    std::cout << "Hash -- nanosec_per_key = " << nanosec_per_key << std::endl;
+
+    {
+        sum = 0;
+        uint64_t num_buckets = n / 100;
+        if (num_buckets == 0) return;
+        // std::vector<uint64_t> sizes(num_buckets, 0);
+        auto start = clock_type::now();
+        for (uint64_t r = 0; r != runs; ++r) {
+            Iterator begin = keys;
+            for (uint64_t i = 0; i != n; ++i) {
+                auto const& key = *begin;
+                hash_type hash = h.hash(key, seed);
+                uint64_t bucket = h.mod(hash, num_buckets);
+                // ++sizes[bucket];
+                sum += bucket;
+                ++begin;
+            }
+        }
+        auto stop = clock_type::now();
+        double elapsed = static_cast<double>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count());
+        double nanosec_per_key = elapsed / (runs * n);
+
+        std::cout << "#ignore: " << sum << std::endl;
+        std::cout << "Hash+Mod -- nanosec_per_key = " << nanosec_per_key << std::endl;
+
+        // for (auto x : sizes) std::cout << x << " ";
+        // std::cout << std::endl;
+    }
 }
 
 template <typename Iterator>
