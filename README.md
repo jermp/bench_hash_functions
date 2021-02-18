@@ -6,8 +6,10 @@ hash functions, such as MurmurHash, CityHash, and SpookyHash.
 
 The hashers in `include/hashers.hpp` are basically wrappers of the methods exposed by the [SMHasher](https://github.com/aappleby/smhasher) test suite.
 
-#### Compile the code
+#### Get and Compile the code
 
+	git clone --recursive https://github.com/jermp/perf_hash_functions.git
+	cd perf_hash_functions
 	mkdir build
 	cd build
 	cmake .. -DCMAKE_BUILD_TYPE=Release
