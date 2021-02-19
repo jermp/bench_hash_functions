@@ -7,13 +7,20 @@
 
 namespace hasher {
 
-inline uint64_t mod64(uint64_t h, uint64_t n) {
-    // h % n is much slower (~2X)
-    return (uint64_t)(((__uint128_t)(h >> 32) * (__uint128_t)n) >> 32);
+/*  The following two functions
+    return a random uniform value in [0..n-1] if h is a hash code
+    (i.e., h is a random value in [0..2^b-1] if expressed using b bits). */
+
+inline uint64_t rand64(uint64_t h, uint64_t n) {
+    uint64_t ret = (uint64_t)(((__uint128_t)(h >> 32) * (__uint128_t)n) >> 32);
+    assert(ret < n);
+    return ret;
 }
 
-inline uint64_t mod128(__uint128_t h, uint64_t n) {
-    return (uint64_t)(((h >> 64) * (__uint128_t)n) >> 64);
+inline uint64_t rand128(__uint128_t h, uint64_t n) {
+    uint64_t ret = (uint64_t)(((h >> 64) * (__uint128_t)n) >> 64);
+    assert(ret < n);
+    return ret;
 }
 
 std::ostream& operator<<(std::ostream& os, __uint128_t const x) {
@@ -31,8 +38,8 @@ struct murmurhash2_64 {
         return "murmurhash2_64";
     }
 
-    static uint64_t mod(hash_type h, uint64_t n) {
-        return mod64(h, n);
+    static uint64_t rand(hash_type h, uint64_t n) {
+        return rand64(h, n);
     }
 
     // specialization for std::string
@@ -53,8 +60,8 @@ struct murmurhash3_128 {
         return "murmurhash3_128";
     }
 
-    static uint64_t mod(hash_type h, uint64_t n) {
-        return mod128(h, n);
+    static uint64_t rand(hash_type h, uint64_t n) {
+        return rand128(h, n);
     }
 
     // specialization for std::string
@@ -79,8 +86,8 @@ struct cityhash_64 {
         return "cityhash_64";
     }
 
-    static uint64_t mod(hash_type h, uint64_t n) {
-        return mod64(h, n);
+    static uint64_t rand(hash_type h, uint64_t n) {
+        return rand64(h, n);
     }
 
     // specialization for std::string
@@ -101,8 +108,8 @@ struct cityhash_128 {
         return "cityhash_128";
     }
 
-    static uint64_t mod(hash_type h, uint64_t n) {
-        return mod128(h, n);
+    static uint64_t rand(hash_type h, uint64_t n) {
+        return rand128(h, n);
     }
 
     // specialization for std::string
@@ -132,8 +139,8 @@ struct spookyhash_64 {
         return "spookyhash_64";
     }
 
-    static uint64_t mod(hash_type h, uint64_t n) {
-        return mod64(h, n);
+    static uint64_t rand(hash_type h, uint64_t n) {
+        return rand64(h, n);
     }
 
     // specialization for std::string
@@ -154,8 +161,8 @@ struct spookyhash_128 {
         return "spookyhash_128";
     }
 
-    static uint64_t mod(hash_type h, uint64_t n) {
-        return mod128(h, n);
+    static uint64_t rand(hash_type h, uint64_t n) {
+        return rand128(h, n);
     }
 
     // specialization for std::string

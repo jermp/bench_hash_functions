@@ -56,11 +56,3 @@ The suffix `_64` and `_128` indicates 64-bit and 128-bit hashes respectively.
 | spookyhash_128 | 5.73 | 11.33 | 13.15 |
 
 From these results, **cityhash** is the clear winner.
-
-#### Fast Modulo
-
-We implemented fast modulo operations using fixed-point multiplication.
-Computing a hash, followed by a modulo operation is as fast as the
-mere hash computation.
-(The standard % is 2X slower than this, on my Mac and on the i9 processor used
-for the above results.)

@@ -90,15 +90,15 @@ void perf(Iterator keys, uint64_t n) {
         uint64_t sum = 0;
         uint64_t num_buckets = n / 100;
         if (num_buckets == 0) return;
-        // std::vector<uint64_t> sizes(num_buckets, 0);
+        std::vector<uint64_t> sizes(num_buckets, 0);
         auto start = clock_type::now();
         for (uint64_t r = 0; r != runs; ++r) {
             Iterator begin = keys;
             for (uint64_t i = 0; i != n; ++i) {
                 auto const& key = *begin;
                 hash_type hash = h.hash(key, seed);
-                uint64_t bucket = h.mod(hash, num_buckets);
-                // ++sizes[bucket];
+                uint64_t bucket = h.rand(hash, num_buckets);
+                ++sizes[bucket];
                 sum += bucket;
                 ++begin;
             }
@@ -109,7 +109,10 @@ void perf(Iterator keys, uint64_t n) {
         double nanosec_per_key = elapsed / (runs * n);
 
         std::cout << "#ignore: " << sum << std::endl;
-        std::cout << "Hash+Mod -- nanosec_per_key = " << nanosec_per_key << std::endl;
+        std::cout << "Hash+Rand -- nanosec_per_key = " << nanosec_per_key << std::endl;
+
+        std::cout << "min value = " << *std::min_element(sizes.begin(), sizes.end()) << std::endl;
+        std::cout << "max value = " << *std::max_element(sizes.begin(), sizes.end()) << std::endl;
 
         // for (auto x : sizes) std::cout << x << " ";
         // std::cout << std::endl;
