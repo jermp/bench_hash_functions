@@ -16,6 +16,14 @@ inline uint64_t mod128(__uint128_t h, uint64_t n) {
     return (uint64_t)(((h >> 64) * (__uint128_t)n) >> 64);
 }
 
+std::ostream& operator<<(std::ostream& os, __uint128_t const x) {
+    static __uint128_t mask = (__uint128_t(1) << 64) - 1;
+    uint64_t first = (uint64_t)(x & mask);
+    uint64_t second = (uint64_t)(x >> 64);
+    os << first << second;
+    return os;
+}
+
 struct murmurhash2_64 {
     typedef uint64_t hash_type;
 

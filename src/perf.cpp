@@ -64,7 +64,7 @@ void perf(Iterator keys, uint64_t n) {
     typedef typename Hasher::hash_type hash_type;
     typedef std::chrono::high_resolution_clock clock_type;
     static const uint64_t runs = 5;
-    uint64_t sum = 0;
+    hash_type ignore = 0;
     Hasher h;
     uint64_t seed = std::random_device()();
 
@@ -74,7 +74,7 @@ void perf(Iterator keys, uint64_t n) {
         for (uint64_t i = 0; i != n; ++i) {
             auto const& key = *begin;
             hash_type hash = h.hash(key, seed);
-            sum += hash;
+            ignore ^= hash;
             ++begin;
         }
     }
@@ -83,11 +83,11 @@ void perf(Iterator keys, uint64_t n) {
         std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count());
     double nanosec_per_key = elapsed / (runs * n);
 
-    std::cout << "#ignore: " << sum << std::endl;
+    std::cout << "#ignore: " << ignore << std::endl;
     std::cout << "Hash -- nanosec_per_key = " << nanosec_per_key << std::endl;
 
     {
-        sum = 0;
+        uint64_t sum = 0;
         uint64_t num_buckets = n / 100;
         if (num_buckets == 0) return;
         // std::vector<uint64_t> sizes(num_buckets, 0);
