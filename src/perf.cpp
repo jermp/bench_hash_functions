@@ -117,6 +117,27 @@ void perf(Iterator keys, uint64_t n) {
         // for (auto x : sizes) std::cout << x << " ";
         // std::cout << std::endl;
     }
+
+    {
+        // uniformity test
+        uint64_t T = 0.63 * n;
+        uint64_t left = 0;
+        uint64_t right = 0;
+        Iterator begin = keys;
+        for (uint64_t i = 0; i != n; ++i) {
+            auto const& key = *begin;
+            hash_type hash = h.hash(key, seed);
+            uint64_t bucket = h.rand(hash, n);
+            if (bucket < T) {
+                ++left;
+            } else {
+                ++right;
+            }
+            ++begin;
+        }
+        std::cout << "left = " << left << " (" << (left * 100.0) / n << "%)" << std::endl;
+        std::cout << "right = " << right << " (" << (right * 100.0) / n << "%)" << std::endl;
+    }
 }
 
 template <typename Iterator>
